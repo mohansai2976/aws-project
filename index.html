@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Static Website Hosting on AWS — S3 + CloudFront + IAM + CloudWatch + SNS</title>
+<meta name="description" content="A private S3 origin served through CloudFront, deployed automatically via GitHub Actions using IAM OIDC federation, monitored by CloudWatch and SNS.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand"><span class="dot">●</span> static-hosting<span style="color:var(--text-muted)">.aws</span></div>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="about.html">About</a>
+      <a href="team.html">Developed By</a>
+      <a href="document.html">Document</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="pulse"></span> Live on CloudFront · Free plan · $0/month</div>
+    <h1>A static site that <span class="accent">deploys itself</span> on every push.</h1>
+    <p class="lede">
+      This site is served entirely from a private Amazon S3 bucket through Amazon CloudFront,
+      with zero public storage access. Every update ships automatically through a GitHub Actions
+      pipeline authenticated by IAM — and CloudWatch and SNS keep watch for errors in real time.
+    </p>
+    <div class="cta-row">
+      <a href="#pipeline" class="btn btn-primary">See the pipeline ↓</a>
+      <a href="document.html" class="btn btn-ghost">View project documentation</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="num">5</div><div class="label">AWS services used</div></div>
+      <div class="stat"><div class="num">0</div><div class="label">Stored credentials</div></div>
+      <div class="stat"><div class="num">~15s</div><div class="label">Push → live</div></div>
+      <div class="stat"><div class="num">$0</div><div class="label">Monthly cost</div></div>
+    </div>
+  </div>
+</header>
+
+<section id="pipeline">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Deployment flow</div>
+      <h2>Push to <code style="font-family:var(--font-mono); color:var(--signal)">main</code>. Everything else is automatic.</h2>
+      <p class="section-sub">A single GitHub Actions workflow authenticates via OIDC, syncs files to S3, and invalidates the CloudFront cache — in that order, every time.</p>
+    </div>
+
+    <div class="pipeline" id="pipeline-track">
+      <div class="pipe-step">
+        <span class="idx">01</span>
+        <div class="title">git push</div>
+        <div class="desc">Code pushed to the main branch on GitHub.</div>
+      </div>
+      <div class="pipe-connector"><div class="runner"></div><svg viewBox="0 0 40 2"><line x1="0" y1="1" x2="40" y2="1" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/></svg></div>
+      <div class="pipe-step">
+        <span class="idx">02</span>
+        <div class="title">GitHub Actions</div>
+        <div class="desc">Assumes an IAM role via OIDC — no stored secrets.</div>
+      </div>
+      <div class="pipe-connector"><div class="runner" style="animation-delay:0.5s"></div><svg viewBox="0 0 40 2"><line x1="0" y1="1" x2="40" y2="1" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/></svg></div>
+      <div class="pipe-step">
+        <span class="idx">03</span>
+        <div class="title">Amazon S3</div>
+        <div class="desc">Files synced to a private bucket. Public access blocked.</div>
+      </div>
+      <div class="pipe-connector"><div class="runner" style="animation-delay:1s"></div><svg viewBox="0 0 40 2"><line x1="0" y1="1" x2="40" y2="1" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/></svg></div>
+      <div class="pipe-step">
+        <span class="idx">04</span>
+        <div class="title">CloudFront</div>
+        <div class="desc">Cache invalidated. Fresh content served over HTTPS.</div>
+      </div>
+      <div class="pipe-connector"><div class="runner" style="animation-delay:1.5s"></div><svg viewBox="0 0 40 2"><line x1="0" y1="1" x2="40" y2="1" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/></svg></div>
+      <div class="pipe-step">
+        <span class="idx">05</span>
+        <div class="title">CloudWatch</div>
+        <div class="desc">Watches CloudFront's 5xx error rate continuously.</div>
+      </div>
+      <div class="pipe-connector"><div class="runner" style="animation-delay:2s"></div><svg viewBox="0 0 40 2"><line x1="0" y1="1" x2="40" y2="1" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/></svg></div>
+      <div class="pipe-step">
+        <span class="idx">06</span>
+        <div class="title">SNS</div>
+        <div class="desc">Emails the team the moment an alarm fires.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Architecture</div>
+      <h2>Five services. One job each.</h2>
+      <p class="section-sub">No custom domain, no purchased certificate — CloudFront's default HTTPS keeps this stack genuinely free.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="icon-row"><span class="tag">STORAGE</span></div>
+        <h3>Amazon S3</h3>
+        <p>Private object storage for HTML, CSS, and JS. Block Public Access stays on — only CloudFront can read it.</p>
+      </div>
+      <div class="card">
+        <div class="icon-row"><span class="tag">DELIVERY</span></div>
+        <h3>Amazon CloudFront</h3>
+        <p>Global CDN and the site's only public entry point. Free HTTPS via its default domain certificate.</p>
+      </div>
+      <div class="card">
+        <div class="icon-row"><span class="tag">IDENTITY</span></div>
+        <h3>AWS IAM (OIDC)</h3>
+        <p>Issues short-lived, scoped credentials to GitHub Actions. No access keys stored anywhere, ever.</p>
+      </div>
+      <div class="card">
+        <div class="icon-row"><span class="tag">MONITORING</span></div>
+        <h3>Amazon CloudWatch</h3>
+        <p>Continuously evaluates CloudFront's error rate against a defined threshold.</p>
+      </div>
+      <div class="card">
+        <div class="icon-row"><span class="tag">ALERTING</span></div>
+        <h3>Amazon SNS</h3>
+        <p>Delivers a real email the moment CloudWatch detects a genuine error spike.</p>
+      </div>
+      <div class="card">
+        <div class="icon-row"><span class="tag">CI/CD</span></div>
+        <h3>GitHub Actions</h3>
+        <p>Syncs files to S3 and invalidates the CloudFront cache on every push to main.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>Built and deployed on AWS · APSSDC Summer Internship Program</div>
+    <div class="footer-links">
+      <a href="team.html">Meet the team</a>
+      <a href="document.html">Full documentation</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
