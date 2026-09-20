@@ -137,16 +137,6 @@ Challenges Faced
 
 ---
 
-Team Members
-
-Bandi Mohan Sai Manikanta
-Devarapalli Charan
-Adimolu V V Naga Durgesh
-Sadapu Sanjay Rish
-Tanni Dhanunjay
-
----
-
 Future Enhancements
 
 - Custom domain integration using Route 53
@@ -154,6 +144,15 @@ Future Enhancements
 - Separate staging and production environments
 - Additional monitoring metrics and dashboards
 - Infrastructure as Code using Terraform or AWS CloudFormation
+
+---
+Team Members
+
+Bandi Mohan Sai Manikanta\
+Devarapalli Charan\
+Adimolu V V Naga Durgesh\
+Sadapu Sanjay Rishi\
+Tanni Dhanunjay
 
 ---
 
