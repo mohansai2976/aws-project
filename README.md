@@ -139,12 +139,11 @@ Challenges Faced
 
 Team Members
 
-Name| Responsibility
-Bandi Mohan Sai Manikanta| S3, CloudFront, CI/CD
-Devarapalli Charan| IAM and OIDC Federation
-Adimolu V V Naga Durgesh| CloudWatch and SNS Alerting
-Sadapu Sanjay Rishi| Frontend and Documentation
-Tanni Dhanunjay| Testing and Cost Governance
+Bandi Mohan Sai Manikanta
+Devarapalli Charan
+Adimolu V V Naga Durgesh
+Sadapu Sanjay Rish
+Tanni Dhanunjay
 
 ---
 
